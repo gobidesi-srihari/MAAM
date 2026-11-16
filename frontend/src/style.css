@@ -1,0 +1,253 @@
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6fa;
+  color: #263445;
+}
+
+/* Login Page */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #102b50, #286090);
+}
+
+.login-card {
+  background: white;
+  width: 380px;
+  padding: 40px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.login-card h1 {
+  color: #17365d;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.login-card p {
+  text-align: center;
+  color: #718096;
+  margin-bottom: 25px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 13px;
+  margin-bottom: 18px;
+  border: 1px solid #d5dce5;
+  border-radius: 7px;
+  font-size: 15px;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 13px;
+  background: #174a7e;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-card button:hover {
+  background: #10365e;
+}
+
+/* Dashboard */
+.dashboard-container {
+  padding: 30px;
+}
+
+.dashboard-header {
+  background: #17365d;
+  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  margin-bottom: 8px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  border-left: 5px solid #286090;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.stat-card h3 {
+  color: #718096;
+  font-size: 15px;
+}
+
+.stat-card h2 {
+  margin-top: 15px;
+  font-size: 30px;
+  color: #17365d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card {
+    width: 90%;
+    padding: 25px;
+  }
+}
+
+
+/* ========================= Dashboard Page ============================================== */
+
+/* Dashboard Welcome */
+.dashboard-welcome {
+  margin-bottom: 30px;
+}
+
+.dashboard-welcome h2 {
+  color: #17365d;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.dashboard-welcome p {
+  color: #718096;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #17365d;
+  color: white;
+  padding: 25px 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 27px;
+}
+
+.dashboard-header p {
+  margin-top: 6px;
+  color: #dce7f3;
+}
+
+.dashboard-header button {
+  padding: 11px 22px;
+  border: 1px solid white;
+  border-radius: 7px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.dashboard-header button:hover {
+  background: white;
+  color: #17365d;
+}
+
+/* Statistics Cards */
+.stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card p {
+  margin-top: 8px;
+  color: #718096;
+  font-size: 13px;
+}
+
+/* Inventory Actions */
+.dashboard-actions {
+  margin-top: 40px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+}
+
+.dashboard-actions h2 {
+  color: #17365d;
+  margin-bottom: 22px;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.action-grid button {
+  padding: 16px;
+  background: #174a7e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.action-grid button:hover {
+  background: #10365e;
+}
+
+.dashboard-footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  color: #718096;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-header {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+}
