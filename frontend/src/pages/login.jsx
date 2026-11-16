@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { apiRequest } from "../services/api.js";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -8,26 +9,22 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage("");
 
     try {
-      const response = await fetch("http://localhost:8000/login", {
+      await apiRequest("/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
-      const data = await response.json();
+      localStorage.setItem("isLoggedIn", "true");
+      window.location.href = "/dashboard";
 
-      if (response.ok) {
-        localStorage.setItem("isLoggedIn", "true");
-        window.location.href = "/";
-      } else {
-        setMessage(data.detail || data.message || "Login failed");
-      }
     } catch (error) {
-      setMessage("Backend connection failed");
+      setMessage(error.message || "Login failed");
     }
   };
 
@@ -57,7 +54,7 @@ function Login() {
           <button type="submit">Sign In</button>
         </form>
 
-        <p>{message}</p>
+        {message && <p className="login-error">{message}</p>}
       </div>
     </div>
   );

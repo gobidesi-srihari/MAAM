@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -15,11 +15,12 @@ def login(data: dict):
     username = data.get("username")
     password = data.get("password")
 
-    if username == "admin" and password == "admin123":
+    if username == "Admin" and password == "poi098":
         return {
             "message": "Login successful"
         }
 
-    return {
-        "message": "Invalid username or password"
-    }
+    raise HTTPException(
+        status_code=401,
+        detail="Invalid username or password"
+    )

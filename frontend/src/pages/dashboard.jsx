@@ -8,17 +8,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
 
-      {/* Header */}
-      <header className="dashboard-header">
-        <div>
-          <h1>IGCAR</h1>
-          <p>Electrical Inventory Management System</p>
-        </div>
 
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </header>
 
       {/* Welcome */}
       <section className="dashboard-welcome">
