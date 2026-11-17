@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from "react";
+
 import {
   BrowserRouter,
   Routes,
@@ -6,6 +8,8 @@ import {
   Navigate,
   Outlet
 } from "react-router-dom";
+
+import { apiRequest } from "./services/api.js";
 
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -15,35 +19,140 @@ import EquipmentDetails from "./pages/EquipmentDetails.jsx";
 import Inventory from "./pages/Inventory.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import Reports from "./pages/Reports.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
 
-// Protect application pages
-function ProtectedRoute() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-  return isLoggedIn ? <Outlet /> : <Navigate to="/" replace />;
+// ==========================================
+// Verify JWT and retrieve user from FastAPI
+// ==========================================
+
+function useAuth() {
+  const [status, setStatus] = useState("checking");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const checkAuthentication = async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        if (active) {
+          setUser(null);
+          setStatus("unauthenticated");
+        }
+        return;
+      }
+
+      try {
+        // Validate JWT and retrieve current role
+        const userData = await apiRequest("/auth/me");
+
+        if (active) {
+          setUser(userData);
+          setStatus("authenticated");
+        }
+      } catch {
+        // Remove invalid or expired session
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("isLoggedIn");
+
+        if (active) {
+          setUser(null);
+          setStatus("unauthenticated");
+        }
+      }
+    };
+
+    checkAuthentication();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return { status, user };
 }
 
-// Handle login page access
-function LoginRoute() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-  return isLoggedIn
+// ==========================================
+// Protect all application pages
+// ==========================================
+
+function ProtectedRoute() {
+  const { status } = useAuth();
+
+  if (status === "checking") {
+    return <p>Checking authentication...</p>;
+  }
+
+  return status === "authenticated"
+    ? <Outlet />
+    : <Navigate to="/" replace />;
+}
+
+
+// ==========================================
+// Handle login page access
+// ==========================================
+
+function LoginRoute() {
+  const { status } = useAuth();
+
+  if (status === "checking") {
+    return <p>Checking authentication...</p>;
+  }
+
+  return status === "authenticated"
     ? <Navigate to="/dashboard" replace />
     : <Login />;
 }
+
+
+// ==========================================
+// Admin-only route protection
+// ==========================================
+
+function AdminRoute() {
+  const { status, user } = useAuth();
+
+  if (status === "checking") {
+    return <p>Checking administrator access...</p>;
+  }
+
+  if (status !== "authenticated") {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}
+
+
+// ==========================================
+// Application routing
+// ==========================================
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Login */}
-        <Route path="/" element={<LoginRoute />} />
+        {/* Login Page */}
+        <Route
+          path="/"
+          element={<LoginRoute />}
+        />
 
-        {/* Protected Pages */}
+        {/* Authenticated Pages */}
         <Route element={<ProtectedRoute />}>
+
           <Route element={<MainLayout />}>
 
+            {/* Dashboard */}
             <Route
               path="/dashboard"
               element={<Dashboard />}
@@ -66,7 +175,7 @@ function App() {
               path="/substations/:locationId/equipment/:equipmentId"
               element={<EquipmentDetails />}
             />
-            
+
             {/* Inventory */}
             <Route
               path="/inventory"
@@ -79,7 +188,18 @@ function App() {
               element={<Reports />}
             />
 
+            {/* Administrator-only Pages */}
+            <Route element={<AdminRoute />}>
+
+              <Route
+                path="/users"
+                element={<UserManagement />}
+              />
+
+            </Route>
+
           </Route>
+
         </Route>
 
         {/* Invalid Routes */}

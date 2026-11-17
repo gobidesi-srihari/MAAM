@@ -1,0 +1,509 @@
+
+/* ==========================================
+   MAAM - USER MANAGEMENT
+   Complete Page Styling
+========================================== */
+
+.user-management-page {
+  width: 100%;
+  min-width: 0;
+  padding: 28px;
+  box-sizing: border-box;
+  color: #1e293b;
+}
+
+/* PAGE HEADER */
+
+.user-management-page .page-header {
+  margin-bottom: 28px;
+}
+
+.user-management-page .page-header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #17365d;
+}
+
+.user-management-page .page-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ==========================================
+   CARDS
+========================================== */
+
+.user-management-page .user-management-card {
+  width: 100%;
+  padding: 28px;
+  margin-bottom: 26px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+}
+
+.user-management-page .user-management-card h2 {
+  margin: 0 0 24px;
+  font-size: 20px;
+  font-weight: 650;
+  color: #17365d;
+}
+
+/* ==========================================
+   CREATE STAFF ACCOUNT FORM
+========================================== */
+
+.user-management-page .user-management-card form {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  gap: 18px;
+}
+
+.user-management-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.user-management-page .form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.user-management-page .form-group input,
+.user-management-page .form-group select {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.user-management-page .form-group input:focus,
+.user-management-page .form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.user-management-page .form-group input::placeholder {
+  color: #94a3b8;
+}
+
+/* CREATE BUTTON */
+
+.user-management-page .create-user-btn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 11px 24px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-management-page .create-user-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.user-management-page button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   MESSAGES
+========================================== */
+
+.user-management-page .success-message,
+.user-management-page .error-message {
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.user-management-page .success-message {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.user-management-page .error-message {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* ==========================================
+   STAFF USERS HEADER
+========================================== */
+
+.user-management-page .staff-users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.user-management-page .staff-users-header h2 {
+  margin: 0;
+}
+
+.user-management-page .refresh-users-btn {
+  padding: 10px 18px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-management-page .refresh-users-btn:hover:not(:disabled) {
+  background: #dbeafe;
+}
+
+/* ==========================================
+   FILTER TOOLBAR
+========================================== */
+
+.user-management-page .staff-users-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.user-management-page .filter-group {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.user-management-page .search-filter {
+  flex: 2;
+  min-width: 220px;
+}
+
+.user-management-page .filter-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.user-management-page .staff-users-filters input,
+.user-management-page .staff-users-filters select {
+  width: 100%;
+  height: 42px;
+  padding: 10px 12px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.user-management-page .staff-users-filters input:focus,
+.user-management-page .staff-users-filters select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.user-management-page .clear-filters-btn {
+  height: 42px;
+  padding: 0 18px;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-management-page .clear-filters-btn:hover {
+  background: #e2e8f0;
+}
+
+/* ==========================================
+   USER COUNT
+========================================== */
+
+.user-management-page .staff-users-count {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.user-management-page .no-users-message {
+  padding: 28px;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+/* ==========================================
+   STAFF USERS TABLE
+========================================== */
+
+.user-management-page .staff-users-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.user-management-page .staff-users-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: 13px;
+}
+
+.user-management-page .staff-users-table thead {
+  background: #f1f5f9;
+}
+
+.user-management-page .staff-users-table th {
+  padding: 15px 16px;
+  text-align: left;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.user-management-page .staff-users-table td {
+  padding: 16px;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.user-management-page .staff-users-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.user-management-page .staff-users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.user-management-page .staff-users-table th:last-child,
+.user-management-page .staff-users-table td:last-child {
+  min-width: 310px;
+}
+
+/* ==========================================
+   ROLE BADGES
+========================================== */
+
+.user-management-page .role-badge,
+.user-management-page .status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.user-management-page .role-badge {
+  text-transform: capitalize;
+}
+
+.user-management-page .role-admin {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.user-management-page .role-engineer {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.user-management-page .role-viewer {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.user-management-page .status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.user-management-page .status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ==========================================
+   ACTION BUTTONS
+========================================== */
+
+.user-management-page .user-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-management-page .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.user-management-page .edit-btn {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.user-management-page .deactivate-btn {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.user-management-page .activate-btn {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.user-management-page .reset-btn {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.user-management-page .save-btn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.user-management-page .cancel-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+/* ==========================================
+   INLINE ROLE EDITOR
+========================================== */
+
+.user-management-page .inline-edit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.user-management-page .inline-edit select {
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* ==========================================
+   PASSWORD RESET FORM
+========================================== */
+
+.user-management-page .password-reset-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.user-management-page .password-reset-form input {
+  min-width: 160px;
+  flex: 1;
+  padding: 9px 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+  .user-management-page {
+    padding: 16px;
+  }
+
+  .user-management-page .user-management-card {
+    padding: 18px;
+  }
+
+  .user-management-page .page-header h1 {
+    font-size: 25px;
+  }
+
+  .user-management-page .staff-users-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-management-page .filter-group,
+  .user-management-page .search-filter {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .user-management-page .clear-filters-btn {
+    width: 100%;
+  }
+
+  .user-management-page .staff-users-header {
+    flex-wrap: wrap;
+  }
+}

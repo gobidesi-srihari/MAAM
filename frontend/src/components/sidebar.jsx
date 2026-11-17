@@ -1,9 +1,40 @@
 
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { apiRequest } from "../services/api.js";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
 
+  // Get logged-in user's role from FastAPI
+  useEffect(() => {
+    let active = true;
+
+    const fetchUser = async () => {
+      try {
+        const user = await apiRequest("/auth/me");
+
+        if (active) {
+          setUserRole(user.role);
+        }
+      } catch (error) {
+        console.error("Unable to retrieve user role:", error);
+
+        if (active) {
+          setUserRole(null);
+        }
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Common menu items for all logged-in users
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: "📊" },
     { name: "Substation Locations", path: "/substations", icon: "📍" },
@@ -11,9 +42,22 @@ function Sidebar() {
     { name: "Reports", path: "/reports", icon: "📑" }
   ];
 
+  // Add User Management only for administrators
+  if (userRole === "admin") {
+    menuItems.push({
+      name: "User Management",
+      path: "/users",
+      icon: "👥"
+    });
+  }
+
+  // Logout
   const handleLogout = () => {
+    localStorage.removeItem("access_token");
     localStorage.removeItem("isLoggedIn");
-    navigate("/");
+
+    navigate("/", { replace: true });
+    window.location.reload();
   };
 
   return (

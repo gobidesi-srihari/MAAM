@@ -6,13 +6,16 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     try {
-      await apiRequest("/login", {
+      // Authenticate using PostgreSQL through FastAPI
+      const data = await apiRequest("/auth/login", {
         method: "POST",
         body: JSON.stringify({
           username,
@@ -20,11 +23,19 @@ function Login() {
         }),
       });
 
+      // Store JWT token for subsequent API requests
+      localStorage.setItem("access_token", data.access_token);
+
+      // Temporary compatibility with existing route protection
       localStorage.setItem("isLoggedIn", "true");
+
+      // Redirect to dashboard
       window.location.href = "/dashboard";
 
     } catch (error) {
-      setMessage(error.message || "Login failed");
+      setMessage(error.message || "Invalid username or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,7 +62,9 @@ function Login() {
             required
           />
 
-          <button type="submit">Sign In</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
         </form>
 
         {message && <p className="login-error">{message}</p>}

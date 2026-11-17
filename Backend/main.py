@@ -1,8 +1,17 @@
-from fastapi import FastAPI, HTTPException
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from routers.auth import router as auth_router
+from routers.users import router as users_router
 
+app = FastAPI(
+    title="MAAM API",
+    description="Electrical Equipment Management System",
+    version="1.0.0"
+)
+
+# Frontend connection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -10,17 +19,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/login")
-def login(data: dict):
-    username = data.get("username")
-    password = data.get("password")
+# Register API routers
+app.include_router(auth_router)
+app.include_router(users_router)
 
-    if username == "Admin" and password == "poi098":
-        return {
-            "message": "Login successful"
-        }
 
-    raise HTTPException(
-        status_code=401,
-        detail="Invalid username or password"
-    )
+@app.get("/")
+def home():
+    return {
+        "message": "MAAM Backend is running successfully"
+    }
