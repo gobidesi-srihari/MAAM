@@ -1,0 +1,322 @@
+
+/* ==========================================
+   ASSET SCHEDULING PAGE
+========================================== */
+
+.asset-scheduling-page {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   PAGE HEADING
+========================================== */
+
+.asset-scheduling-page .page-heading {
+  margin-bottom: 24px;
+}
+
+.asset-scheduling-page .page-heading h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+
+.asset-scheduling-page .page-heading p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ==========================================
+   SUMMARY CARDS
+========================================== */
+
+.scheduling-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.schedule-stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2563eb;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.schedule-stat-card span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.schedule-stat-card h2 {
+  font-size: 30px;
+  margin: 12px 0 0;
+  color: #1e293b;
+}
+
+.schedule-stat-card.due-soon {
+  border-left-color: #f59e0b;
+}
+
+.schedule-stat-card.overdue {
+  border-left-color: #dc2626;
+}
+
+.schedule-stat-card.completed {
+  border-left-color: #16a34a;
+}
+
+/* ==========================================
+   FORM SECTION
+========================================== */
+
+.scheduling-form-section,
+.scheduling-list-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 26px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.scheduling-form-section h2,
+.scheduling-list-section h2 {
+  font-size: 19px;
+  color: #1e293b;
+  margin: 0 0 20px;
+}
+
+.scheduling-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.scheduling-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.scheduling-form-grid input,
+.scheduling-form-grid select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.scheduling-form-grid input:focus,
+.scheduling-form-grid select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ==========================================
+   ADD SCHEDULE BUTTON
+========================================== */
+
+.schedule-submit-btn {
+  margin-top: 22px;
+  padding: 12px 24px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.schedule-submit-btn:hover {
+  background: #1d4ed8;
+}
+
+/* ==========================================
+   ALERT SECTION
+========================================== */
+
+.scheduling-alert {
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-left: 5px solid #f97316;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.scheduling-alert strong {
+  color: #9a3412;
+  font-size: 15px;
+}
+
+.scheduling-alert p {
+  margin: 8px 0 0;
+  color: #9a3412;
+  font-size: 14px;
+}
+
+/* ==========================================
+   SCHEDULED ACTIVITIES TABLE
+========================================== */
+
+.scheduling-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.scheduling-list-header h2 {
+  margin: 0;
+}
+
+.scheduling-list-header select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+}
+
+.scheduling-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.scheduling-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+.scheduling-table th {
+  background: #f1f5f9;
+  color: #334155;
+  text-align: left;
+  padding: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.scheduling-table td {
+  padding: 14px;
+  color: #475569;
+  font-size: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.scheduling-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.scheduling-table td button {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.scheduling-table td button:hover {
+  background: #1d4ed8;
+}
+
+/* ==========================================
+   STATUS BADGES
+========================================== */
+
+.schedule-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.schedule-status.scheduled {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.schedule-status.due-soon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.schedule-status.overdue {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.schedule-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.scheduling-empty {
+  text-align: center;
+  padding: 24px !important;
+  color: #64748b;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+========================================== */
+
+@media (max-width: 1100px) {
+  .scheduling-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scheduling-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .asset-scheduling-page {
+    padding: 14px;
+  }
+
+  .scheduling-summary,
+  .scheduling-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scheduling-form-section,
+  .scheduling-list-section {
+    padding: 16px;
+  }
+
+  .scheduling-list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

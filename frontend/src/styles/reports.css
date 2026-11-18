@@ -1,0 +1,31 @@
+
+/* Reports - All filters in one row */
+
+.reports-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.reports-filters input,
+.reports-filters select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .reports-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .reports-filters {
+    grid-template-columns: 1fr;
+  }
+}

@@ -4,6 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers.auth import router as auth_router
 from routers.users import router as users_router
+from routers.substations import router as substations_router
+from routers.equipment_types import router as equipment_types_router
+from routers.equipment import router as equipment_router
+from routers.transformer_nameplate import router as transformer_nameplate_router
+from routers import transformer_bdv
 
 app = FastAPI(
     title="MAAM API",
@@ -22,6 +27,11 @@ app.add_middleware(
 # Register API routers
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(substations_router)
+app.include_router(equipment_types_router)
+app.include_router(equipment_router)
+app.include_router(transformer_nameplate_router)
+app.include_router(transformer_bdv.router)
 
 
 @app.get("/")

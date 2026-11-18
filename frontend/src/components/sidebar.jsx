@@ -36,10 +36,31 @@ function Sidebar() {
 
   // Common menu items for all logged-in users
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: "📊" },
-    { name: "Substation Locations", path: "/substations", icon: "📍" },
-    { name: "Inventory", path: "/inventory", icon: "📦" },
-    { name: "Reports", path: "/reports", icon: "📑" }
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: "📊"
+    },
+    {
+      name: "Substation Locations",
+      path: "/substations",
+      icon: "📍"
+    },
+    {
+      name: "Inventory",
+      path: "/inventory",
+      icon: "📦"
+    },
+    {
+      name: "Asset Scheduling",
+      path: "/asset-scheduling",
+      icon: "📅"
+    },
+    {
+      name: "Reports",
+      path: "/reports",
+      icon: "📑"
+    }
   ];
 
   // Add User Management only for administrators
@@ -77,7 +98,9 @@ function Sidebar() {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
+              isActive
+                ? "sidebar-link active"
+                : "sidebar-link"
             }
           >
             <span>{item.icon}</span>

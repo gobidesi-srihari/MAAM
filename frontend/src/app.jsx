@@ -20,6 +20,9 @@ import Inventory from "./pages/Inventory.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import Reports from "./pages/Reports.jsx";
 import UserManagement from "./pages/UserManagement.jsx";
+import EquipmentCategory from "./pages/EquipmentCategory";
+import TransformerDetails from "./pages/TransformerDetails";
+import AssetScheduling from "./pages/AssetScheduling";
 
 
 // ==========================================
@@ -170,6 +173,16 @@ function App() {
               element={<LocationEquipment />}
             />
 
+            <Route
+              path="/substations/:locationId/equipment/category/:categoryType"
+              element={<EquipmentCategory />}
+            />
+
+            <Route
+              path="/substations/:locationId/transformer/:equipmentId"
+              element={<TransformerDetails />}
+            />
+
             {/* Equipment Details */}
             <Route
               path="/substations/:locationId/equipment/:equipmentId"
@@ -180,6 +193,11 @@ function App() {
             <Route
               path="/inventory"
               element={<Inventory />}
+            />
+            
+            <Route
+              path="/asset-scheduling"
+              element={<AssetScheduling />}
             />
 
             {/* Reports */}

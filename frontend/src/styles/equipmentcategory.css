@@ -1,0 +1,359 @@
+
+/* =========================================
+   EQUIPMENT CATEGORY PAGE
+========================================= */
+
+.equipment-page {
+  width: 100%;
+  padding: 28px;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   PAGE HEADING
+========================================= */
+
+.equipment-page .page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.equipment-page .page-heading h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+
+.equipment-page .page-heading p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.equipment-page .back-btn {
+  background: #e2e8f0;
+  color: #334155;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.equipment-page .back-btn:hover {
+  background: #cbd5e1;
+}
+
+/* =========================================
+   EQUIPMENT SUMMARY
+========================================= */
+
+.equipment-page .equipment-summary {
+  background: #ffffff;
+  padding: 22px 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.equipment-page .equipment-summary h3 {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.equipment-page .equipment-summary h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2563eb;
+  margin: 0;
+}
+
+/* =========================================
+   SEARCH EQUIPMENT
+========================================= */
+
+.equipment-page .equipment-filter {
+  margin-bottom: 28px;
+}
+
+.equipment-page .equipment-filter input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  font-size: 14px;
+  color: #1e293b;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.equipment-page .equipment-filter input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================================
+   EQUIPMENT LIST
+========================================= */
+
+.equipment-page .equipment-list-section {
+  margin-bottom: 32px;
+}
+
+.equipment-page .equipment-list-section > h2 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px;
+}
+
+.equipment-page .equipment-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* =========================================
+   INDIVIDUAL EQUIPMENT ROW
+========================================= */
+
+.equipment-page .equipment-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 22px 26px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.equipment-page .equipment-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08);
+}
+
+/* =========================================
+   EQUIPMENT ICON
+========================================= */
+
+.equipment-page .equipment-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  font-size: 26px;
+}
+
+/* =========================================
+   EQUIPMENT INFORMATION
+========================================= */
+
+.equipment-page .equipment-category-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.equipment-page .equipment-category-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 6px;
+}
+
+.equipment-page .equipment-category-info p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   VIEW DETAILS BUTTON
+========================================= */
+
+.equipment-page .view-equipment-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.equipment-page .view-equipment-btn:hover {
+  background: #1d4ed8;
+}
+
+/* =========================================
+   CREATE NEW EQUIPMENT SECTION
+========================================= */
+
+.equipment-page .add-equipment-section {
+  margin-top: 32px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.equipment-page .add-equipment-section h2 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px;
+}
+
+/* =========================================
+   CREATE EQUIPMENT FORM
+========================================= */
+
+.equipment-page .add-equipment-section form {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.equipment-page .add-equipment-section input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.equipment-page .add-equipment-section input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================================
+   CREATE EQUIPMENT BUTTON
+========================================= */
+
+.equipment-page .add-equipment-section button {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.equipment-page .add-equipment-section button:hover {
+  background: #15803d;
+}
+
+.equipment-page .add-equipment-section button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   ERROR AND EMPTY STATE
+========================================= */
+
+.equipment-page .equipment-form-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.equipment-page .no-equipment {
+  padding: 20px;
+  text-align: center;
+  color: #64748b;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+}
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+.equipment-page button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+  .equipment-page {
+    padding: 16px;
+  }
+
+  .equipment-page .page-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .equipment-page .equipment-card {
+    padding: 18px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .equipment-page .equipment-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .equipment-page .view-equipment-btn {
+    width: 100%;
+  }
+
+  .equipment-page .add-equipment-section {
+    padding: 18px;
+  }
+
+  .equipment-page .add-equipment-section form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .equipment-page .add-equipment-section input {
+    flex: auto;
+    width: 100%;
+  }
+
+  .equipment-page .add-equipment-section button {
+    width: 100%;
+  }
+}

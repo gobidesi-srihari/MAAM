@@ -1,78 +1,159 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const initialEquipment = {
-  "PDC-1": [
-    { id: "TR-1", type: "Transformer" },
-    { id: "TR-2", type: "Transformer" },
-    { id: "TR-3", type: "Transformer" },
-    { id: "CB-1", type: "Circuit Breaker" },
-    { id: "PANEL-1", type: "Panel" },
-    { id: "33KV-SY-1", type: "33 kV Switchyard" },
-    { id: "CTPT-F1", type: "CT/PT Feeder" }
-  ],
-  "PDC-2": []
-};
+import {
+  getEquipmentTypes,
+  createEquipmentType,
+} from "../services/api";
+
+import "../styles/LocationEquipment.css";
 
 function LocationEquipment() {
   const { locationId } = useParams();
   const navigate = useNavigate();
 
-  const [equipment, setEquipment] = useState(
-    () => initialEquipment[locationId] || []
+  // ==========================================
+  // STATE MANAGEMENT
+  // ==========================================
+
+  const [equipmentTypes, setEquipmentTypes] = useState([]);
+  const [newEquipmentType, setNewEquipmentType] = useState("");
+  const [search, setSearch] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // ==========================================
+  // FETCH EQUIPMENT TYPES FROM POSTGRESQL
+  // ==========================================
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadEquipmentTypes() {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      setEquipmentTypes([]);
+
+      try {
+        const data = await getEquipmentTypes(locationId);
+
+        if (active) {
+          setEquipmentTypes(data);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadEquipmentTypes();
+
+    return () => {
+      active = false;
+    };
+  }, [locationId]);
+
+  // ==========================================
+  // SEARCH EQUIPMENT TYPES
+  // ==========================================
+
+  const filteredEquipmentTypes = equipmentTypes.filter(
+    (equipment) =>
+      equipment.name
+        .toLowerCase()
+        .includes(search.trim().toLowerCase())
   );
 
-  const [equipmentId, setEquipmentId] = useState("");
-  const [equipmentType, setEquipmentType] = useState("Transformer");
+  // ==========================================
+  // CREATE EQUIPMENT TYPE
+  // ==========================================
 
-  const equipmentTypes = [
-    "Transformer",
-    "Circuit Breaker",
-    "Panel",
-    "33 kV Switchyard",
-    "CT/PT Feeder"
-  ];
-
-  const addEquipment = (e) => {
+  const addEquipmentType = async (e) => {
     e.preventDefault();
 
-    const id = equipmentId.trim().toUpperCase();
+    const name = newEquipmentType.trim();
 
-    if (!id) return;
+    setError("");
+    setSuccess("");
 
-    const exists = equipment.some(
-      (item) => item.id.toLowerCase() === id.toLowerCase()
-    );
-
-    if (exists) {
-      alert("This equipment ID already exists.");
+    if (!name) {
+      setError("Please enter an Equipment Type.");
       return;
     }
 
-    setEquipment((previous) => [
-      ...previous,
-      {
-        id,
-        type: equipmentType
-      }
-    ]);
+    // Prevent duplicate equipment types
+    const exists = equipmentTypes.some(
+      (equipment) =>
+        equipment.name.toLowerCase() === name.toLowerCase()
+    );
 
-    setEquipmentId("");
+    if (exists) {
+      setError("This Equipment Type already exists.");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      // Save equipment type to PostgreSQL
+      await createEquipmentType(locationId, { name });
+
+      // Reload latest equipment types from database
+      const updatedTypes = await getEquipmentTypes(locationId);
+
+      setEquipmentTypes(updatedTypes);
+      setNewEquipmentType("");
+      setSuccess("Equipment Type created successfully.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  // ==========================================
+  // OPEN EQUIPMENT CATEGORY
+  // ==========================================
+
+  const openCategory = (equipment) => {
+    navigate(
+      `/substations/${encodeURIComponent(
+        locationId
+      )}/equipment/category/${encodeURIComponent(
+        equipment.name
+      )}`
+    );
+  };
+
+  // ==========================================
+  // UI
+  // ==========================================
 
   return (
     <div className="equipment-page">
 
+      {/* PAGE HEADING */}
       <div className="page-heading">
         <div>
-          <h1>{locationId} - Equipment</h1>
+          <h1>{locationId} - Equipment Types</h1>
+
           <p>
-            Electrical equipment registered under {locationId}.
+            Manage equipment types for this substation.
           </p>
         </div>
 
         <button
+          type="button"
           className="back-btn"
           onClick={() => navigate("/substations")}
         >
@@ -80,89 +161,120 @@ function LocationEquipment() {
         </button>
       </div>
 
+      {/* SUMMARY */}
       <div className="equipment-summary">
-        <h3>Total Equipment</h3>
-        <h2>{equipment.length}</h2>
+        <h3>Total Equipment Types</h3>
+        <h2>{equipmentTypes.length}</h2>
       </div>
 
-      <div className="equipment-list-section">
-        <h2>Equipment List</h2>
+      {/* SEARCH */}
+      <div className="equipment-filter">
+        <input
+          type="text"
+          placeholder="Search equipment types..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-        {equipment.length === 0 ? (
-          <div className="empty-state">
-            <h3>No Equipment Added Yet</h3>
-            <p>
-              There is no equipment registered under {locationId}.
-              Add equipment using the form below.
-            </p>
-          </div>
+      {/* EQUIPMENT TYPE LIST */}
+      <div className="equipment-list-section">
+        <h2>Equipment Types</h2>
+
+        {loading ? (
+          <p>Loading equipment types...</p>
         ) : (
           <div className="equipment-grid">
 
-            {equipment.map((item) => (
-              <div className="equipment-card" key={item.id}>
+            {filteredEquipmentTypes.map((equipment) => (
+              <div
+                className="equipment-card"
+                key={equipment.id}
+              >
+                <div className="equipment-icon">
+                  ⚡
+                </div>
 
-                <div className="equipment-icon">⚡</div>
+                <div className="equipment-category-info">
+                  <h3>{equipment.name}</h3>
 
-                <h3>{item.id}</h3>
-
-                <p>{item.type}</p>
+                  <p>
+                    Equipment category
+                  </p>
+                </div>
 
                 <button
-                  onClick={() =>
-                    navigate(
-                      `/substations/${locationId}/equipment/${encodeURIComponent(item.id)}`
-                    )
-                  }
+                  type="button"
+                  className="view-equipment-btn"
+                  onClick={() => openCategory(equipment)}
                 >
-                  View Details →
+                  View Equipment →
                 </button>
-
               </div>
             ))}
+
+            {filteredEquipmentTypes.length === 0 && (
+              <p className="no-equipment">
+                {equipmentTypes.length === 0
+                  ? "No equipment types created for this substation."
+                  : "No matching equipment types found."}
+              </p>
+            )}
 
           </div>
         )}
       </div>
 
+      {/* CREATE NEW EQUIPMENT TYPE */}
       <div className="add-equipment-section">
 
-        <h2>Add Equipment</h2>
+        <h2>Create New Equipment Type</h2>
 
-        <form onSubmit={addEquipment}>
+        <form onSubmit={addEquipmentType}>
 
-          <div>
-            <label>Equipment ID</label>
+          <input
+            type="text"
+            placeholder="Enter Equipment Type (Example: Transformer)"
+            value={newEquipmentType}
+            onChange={(e) => {
+              setNewEquipmentType(e.target.value);
+              setError("");
+              setSuccess("");
+            }}
+            maxLength={100}
+            required
+          />
 
-            <input
-              type="text"
-              placeholder="Example: TR-4"
-              value={equipmentId}
-              onChange={(e) => setEquipmentId(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label>Equipment Type</label>
-
-            <select
-              value={equipmentType}
-              onChange={(e) => setEquipmentType(e.target.value)}
-            >
-              {equipmentTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button type="submit">
-            + Add Equipment
+          <button
+            type="submit"
+            disabled={saving || loading}
+          >
+            {saving
+              ? "Creating..."
+              : "+ Create Equipment Type"}
           </button>
 
         </form>
+
+        {error && (
+          <p className="equipment-form-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p
+            role="status"
+            style={{
+              color: "#15803d",
+              marginTop: "12px",
+              fontSize: "14px",
+            }}
+          >
+            {success}
+          </p>
+        )}
+
       </div>
 
     </div>
