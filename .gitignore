@@ -8,3 +8,6 @@ __pycache__/
 *.pyc
 
 backend/.env
+
+# Uploaded transformer images
+backend/uploads/

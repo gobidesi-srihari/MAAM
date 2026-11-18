@@ -175,7 +175,10 @@ export async function getTransformerNameplate(
 ) {
   return apiRequest(
     `/substations/${encodeURIComponent(substationId)}` +
-    `/transformers/${encodeURIComponent(equipmentId)}/nameplate`
+    `/transformers/${encodeURIComponent(equipmentId)}/nameplate`,
+    {
+      cache: "no-store",
+    }
   );
 }
 
@@ -214,6 +217,7 @@ export async function getTransformerNameplateImage(
     `${encodeURIComponent(equipmentId)}/nameplate/image`,
     {
       method: "GET",
+      cache: "no-store",
       headers: {
         ...(token
           ? { Authorization: `Bearer ${token}` }
@@ -223,14 +227,32 @@ export async function getTransformerNameplateImage(
   );
 
   if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const detail =
+      typeof errorData.detail === "string"
+        ? errorData.detail
+        : "Failed to load nameplate image";
+
+    throw new Error(`${detail} (${response.status})`);
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.toLowerCase().startsWith("image/")) {
     throw new Error(
-      `Failed to load nameplate image (${response.status})`
+      `Nameplate image endpoint returned an unexpected content type: ${
+        contentType || "unknown"
+      }`
     );
   }
 
   // Convert protected image response into a browser URL.
   // The calling component must revoke this URL when done.
   const imageBlob = await response.blob();
+
+  if (!imageBlob.size) {
+    throw new Error("Nameplate image response was empty");
+  }
 
   return URL.createObjectURL(imageBlob);
 }

@@ -8,6 +8,7 @@ from fastapi import (
     Depends,
     File,
     HTTPException,
+    Response,
     UploadFile,
     status,
 )
@@ -28,7 +29,7 @@ router = APIRouter(
 
 UPLOAD_ROOT = (
     Path(__file__).resolve().parents[1] / "uploads" / "transformers"
-)
+).resolve()
 
 MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -142,7 +143,7 @@ async def upload_nameplate(
     UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 
     filename = f"{uuid4().hex}{extension}"
-    file_path = UPLOAD_ROOT / filename
+    file_path = (UPLOAD_ROOT / filename).resolve()
 
     existing = (
         db.query(TransformerNameplate)
@@ -198,9 +199,12 @@ async def upload_nameplate(
 def get_nameplate_info(
     substation_id: str,
     equipment_id: str,
+    response: Response,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    response.headers["Cache-Control"] = "no-store"
+
     validate_transformer(db, substation_id, equipment_id)
 
     record = (
@@ -253,7 +257,7 @@ def get_nameplate_image(
             detail="Nameplate image not found",
         )
 
-    file_path = Path(record.image_path)
+    file_path = Path(record.image_path).resolve()
 
     if (
         file_path.parent != UPLOAD_ROOT
@@ -271,4 +275,5 @@ def get_nameplate_image(
         else "image/png"
         if file_path.suffix.lower() == ".png"
         else "image/webp",
+        headers={"Cache-Control": "no-store"},
     )

@@ -675,6 +675,22 @@ function TransformerDetails() {
   const [success, setSuccess] = useState("");
 
   const imageUrlRef = useRef(null);
+  const uploadInputRef = useRef(null);
+  const [isImageViewerOpen, setImageViewerOpen] = useState(false);
+  const [imageZoom, setImageZoom] = useState(1);
+
+  useEffect(() => {
+    if (!isImageViewerOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setImageViewerOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isImageViewerOpen]);
 
   // ==========================================
   // LOAD NAMEPLATE FROM FASTAPI
@@ -694,11 +710,18 @@ function TransformerDetails() {
         imageUrlRef.current = null;
       }
 
+      let metadataFound = false;
+
       try {
         const metadata = await getTransformerNameplate(
           locationId,
           equipmentId
         );
+        metadataFound = true;
+
+        if (active) {
+          setNameplateInfo(metadata);
+        }
 
         const imageUrl =
           await getTransformerNameplateImage(
@@ -708,17 +731,16 @@ function TransformerDetails() {
 
         if (active) {
           imageUrlRef.current = imageUrl;
-          setNameplateInfo(metadata);
           setNameplateImage(imageUrl);
         } else {
           URL.revokeObjectURL(imageUrl);
         }
       } catch (err) {
-        if (
-          active &&
-          !err.message.includes("404") &&
-          !err.message.toLowerCase().includes("not found")
-        ) {
+        const notFound =
+          err.message.includes("404") ||
+          err.message.toLowerCase().includes("not found");
+
+        if (active && (metadataFound || !notFound)) {
           setError(err.message);
         }
       } finally {
@@ -874,10 +896,20 @@ function TransformerDetails() {
               {loadingImage ? (
                 <p>Loading nameplate image...</p>
               ) : nameplateImage ? (
-                <img
-                  src={nameplateImage}
-                  alt={`${equipmentId} transformer nameplate`}
-                />
+                <button
+                  type="button"
+                  className="transformer-nameplate-preview"
+                  onClick={() => {
+                    setImageZoom(1);
+                    setImageViewerOpen(true);
+                  }}
+                  aria-label="Open nameplate image"
+                >
+                  <img
+                    src={nameplateImage}
+                    alt={`${equipmentId} transformer nameplate. Click to enlarge.`}
+                  />
+                </button>
               ) : (
                 <p>No nameplate image uploaded.</p>
               )}
@@ -888,20 +920,27 @@ function TransformerDetails() {
                 </p>
               )}
 
-              <label className="transformer-upload-label">
+              <button
+                type="button"
+                className="transformer-upload-button"
+                onClick={() => uploadInputRef.current?.click()}
+                disabled={uploading}
+              >
                 {uploading
                   ? "Uploading..."
                   : nameplateImage
                   ? "Replace Nameplate Image"
                   : "Upload Nameplate Image"}
-
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleImageChange}
-                  disabled={uploading}
-                />
-              </label>
+              </button>
+              <input
+                ref={uploadInputRef}
+                className="transformer-upload-input"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageChange}
+                disabled={uploading}
+                aria-label="Select a replacement nameplate image"
+              />
 
               <p className="transformer-hint">
                 Supported formats: JPG, PNG, WebP.
@@ -974,6 +1013,76 @@ function TransformerDetails() {
           )}
         </main>
       </div>
+
+      {isImageViewerOpen && nameplateImage && (
+        <div
+          className="transformer-image-viewer-backdrop"
+          role="presentation"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setImageViewerOpen(false);
+            }
+          }}
+        >
+          <section
+            className="transformer-image-viewer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Nameplate image viewer"
+          >
+            <header className="transformer-image-viewer-toolbar">
+              <strong>{nameplateInfo?.original_filename || "Nameplate image"}</strong>
+              <div className="transformer-image-viewer-actions">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageZoom((zoom) =>
+                      Math.max(0.5, Number((zoom - 0.25).toFixed(2)))
+                    )
+                  }
+                  disabled={imageZoom <= 0.5}
+                  aria-label="Zoom out"
+                >
+                  −
+                </button>
+                <span aria-live="polite">{Math.round(imageZoom * 100)}%</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageZoom((zoom) =>
+                      Math.min(3, Number((zoom + 0.25).toFixed(2)))
+                    )
+                  }
+                  disabled={imageZoom >= 3}
+                  aria-label="Zoom in"
+                >
+                  +
+                </button>
+                <a
+                  href={nameplateImage}
+                  download={nameplateInfo?.original_filename || `${equipmentId}-nameplate`}
+                >
+                  Download
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setImageViewerOpen(false)}
+                  aria-label="Close image viewer"
+                >
+                  Close
+                </button>
+              </div>
+            </header>
+            <div className="transformer-image-viewer-stage">
+              <img
+                src={nameplateImage}
+                alt={`${equipmentId} transformer nameplate`}
+                style={{ width: `${imageZoom * 100}%` }}
+              />
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
