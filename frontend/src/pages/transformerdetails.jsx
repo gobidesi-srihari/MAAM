@@ -6,9 +6,11 @@ import {
   getTransformerNameplate,
   getTransformerNameplateImage,
   uploadTransformerNameplate,
+  getTransformerTestCatalog,
   getTransformerBDV,
   createTransformerBDV,
 } from "../services/api";
+import TransformerTestParameter from "../components/TransformerTestParameter.jsx";
 
 import {
   ResponsiveContainer,
@@ -21,7 +23,7 @@ import {
   Legend,
 } from "recharts";
 
-import "../styles/TransformerDetails.css";
+import "../styles/transformerdetails.css";
 
 // ==========================================
 // TRANSFORMER PARAMETER TREE
@@ -46,16 +48,16 @@ const transformerTree = [
             label: "Basic",
             children: [
               { id: "bdv", label: "Breakdown Voltage" },
-              { id: "water", label: "Water Content" },
-              { id: "aci", label: "Acididty" },
+              { id: "water_content", label: "Water Content" },
+              { id: "acidity", label: "Acidity" },
               {
                 id: "ddf",
-                label: "Dielectric dissipation Factor",
+                label: "Dielectric Dissipation Factor",
               },
-              { id: "res", label: "Resistivity" },
-              { id: "s&s", label: "Sediment & Sludge" },
-              { id: "ift", label: "Inter Facial Tension" },
-              { id: "fp", label: "Flash Point" },
+              { id: "resistivity", label: "Resistivity" },
+              { id: "sediment_sludge", label: "Sediment & Sludge" },
+              { id: "interfacial_tension", label: "Interfacial Tension" },
+              { id: "flash_point", label: "Flash Point" },
             ],
           },
           {
@@ -69,13 +71,22 @@ const transformerTree = [
               { id: "ethylene", label: "Ethylene" },
               { id: "ethane", label: "Ethane" },
               { id: "acetylene", label: "Acetylene" },
-              { id: "propylenet", label: "Propylenet propane" },
-              { id: "carbondioxide", label: "Carbondioxide" },
+              { id: "propylene_propane", label: "Propylene + Propane" },
+              { id: "carbon_dioxide", label: "Carbon Dioxide" },
+              { id: "carbon_monoxide", label: "Carbon Monoxide" },
             ],
           },
           {
             id: "furan",
             label: "Furan Analysis",
+            children: [
+              { id: "total_furan", label: "Total Furan Content" },
+              { id: "hmf", label: "5-Hydroxymethyl-2-furfural" },
+              { id: "furfuryl_alcohol", label: "2-Furfuryl Alcohol" },
+              { id: "furfural", label: "2-Furfural" },
+              { id: "acetylfuran", label: "2-Acetylfuran" },
+              { id: "methyl_furfural", label: "5-Methyl-2-furfural" },
+            ],
           },
         ],
       },
@@ -83,9 +94,9 @@ const transformerTree = [
         id: "winding",
         label: "Winding Parameters",
         children: [
-          { id: "hv-lv", label: "HV-LV" },
-          { id: "hv-e", label: "HV-E" },
-          { id: "lv-e", label: "LV-E" },
+          { id: "hv_lv", label: "HV-LV" },
+          { id: "hv_e", label: "HV-E" },
+          { id: "lv_e", label: "LV-E" },
         ],
       },
       {
@@ -119,6 +130,18 @@ function formatTestDate(value) {
   const [year, month, day] = value.split("-");
 
   return `${day}-${month}-${year}`;
+}
+
+function findTreePath(nodes, targetId, ancestors = []) {
+  for (const node of nodes) {
+    const path = [...ancestors, node];
+    if (node.id === targetId) return path;
+    if (node.children?.length) {
+      const childPath = findTreePath(node.children, targetId, path);
+      if (childPath) return childPath;
+    }
+  }
+  return null;
 }
 
 // ==========================================
@@ -617,18 +640,34 @@ function TransformerDetails() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Select the requested report section when arriving from Reports.
+  // Select the requested test section when arriving from reports or scheduling.
   const getRequestedNode = () => {
     const section = new URLSearchParams(location.search).get("section");
-    if (section === "bdv") {
-      return transformerTree[1].children[0].children[0].children.find(
-        (node) => node.id === "bdv"
-      );
-    }
-    return transformerTree[0];
+    return (
+      findTreePath(transformerTree, section)?.slice(-1)[0] ||
+      transformerTree[0]
+    );
   };
 
   const [selectedNode, setSelectedNode] = useState(getRequestedNode);
+  const [testCatalog, setTestCatalog] = useState([]);
+  const [catalogError, setCatalogError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    getTransformerTestCatalog()
+      .then((catalog) => {
+        if (active) setTestCatalog(catalog.parameters || []);
+      })
+      .catch((error) => {
+        if (active) setCatalogError(error.message);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const [expanded, setExpanded] = useState([
     "test-parameters",
@@ -643,14 +682,14 @@ function TransformerDetails() {
   // Keep the selected section synchronized with the report link.
   useEffect(() => {
     const section = new URLSearchParams(location.search).get("section");
-    if (section === "bdv") {
-      setSelectedNode(
-        transformerTree[1].children[0].children[0].children.find(
-          (node) => node.id === "bdv"
-        )
-      );
+    const path = findTreePath(transformerTree, section);
+    if (path) {
+      setSelectedNode(path[path.length - 1]);
       setExpanded((previous) => [
-        ...new Set([...previous, "test-parameters", "oil", "basic"]),
+        ...new Set([
+          ...previous,
+          ...path.slice(0, -1).map((node) => node.id),
+        ]),
       ]);
     }
   }, [location.search, locationId, equipmentId]);
@@ -843,6 +882,10 @@ function TransformerDetails() {
     }
   };
 
+  const selectedParameter = testCatalog.find(
+    (parameter) => parameter.key === selectedNode.id
+  );
+
   // ==========================================
   // RENDER PAGE
   // ==========================================
@@ -966,11 +1009,12 @@ function TransformerDetails() {
               )}
             </div>
 
-          ) : selectedNode.id === "bdv" ? (
-
-            <BreakdownVoltage
+          ) : selectedParameter ? (
+            <TransformerTestParameter
+              key={`${locationId}:${equipmentId}:${selectedParameter.key}`}
               locationId={locationId}
               equipmentId={equipmentId}
+              parameter={selectedParameter}
             />
 
           ) : selectedNode.children?.length ? (
@@ -1005,9 +1049,9 @@ function TransformerDetails() {
               <h3>{selectedNode.label}</h3>
 
               <p>
-                Measurement records, test results,
-                and graphs will be displayed here
-                after database integration.
+                {catalogError
+                  ? `Test parameter configuration could not be loaded: ${catalogError}`
+                  : "No configurable test parameter is available for this section."}
               </p>
             </div>
           )}

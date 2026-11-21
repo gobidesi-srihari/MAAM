@@ -144,7 +144,7 @@ currently registered by the backend. You can expand an endpoint and use
 The current login request is sent from React to:
 
 ``` text
-POST http://localhost:8000/login
+POST http://localhost:8000/auth/login
 ```
 
 The frontend sends the username and password as JSON. FastAPI validates
@@ -165,7 +165,7 @@ Current flow:
 ``` text
 Browser (React)
     |
-    | POST /login (JSON credentials)
+    | POST /auth/login (JSON credentials)
     v
 FastAPI backend
     |
@@ -282,9 +282,70 @@ Then open:
 You do not need to run `npm install` or `pip install` every day. Run
 those commands only for a first-time setup or when dependencies change.
 
+## 11. Asset Scheduling
+
+Transformer parameter results are entered from each transformer’s
+**Test Parameters** page. The schedule is calculated from the latest
+saved result date for that parameter plus its configured interval.
+Parameters with no configured interval do not create automatic
+reminders. Weekends and Tamil Nadu public holidays move to the next
+working day.
+
+The Dashboard only shows upcoming tests due in the next seven days.
+Asset Scheduling shows all upcoming and overdue test dates. These are
+in-app reminders; email and push notifications are not configured.
+
+Intervals, units, sample chart points, and any report-specific reference
+bands are kept together in
+`Backend/config/transformer_test_parameters.json`. Edit that file to
+adjust intervals or add parameters. The reference bands currently
+represent only report RP-2526-026098; confirm they apply to the actual
+transformer and oil before using them to make operational decisions.
+The report does not supply good/fair/poor limits for DGA or furan tests,
+so those results are displayed without automatic grading.
+
+After installing the backend requirements and configuring PostgreSQL,
+create the new scheduling and test-reading tables from the backend folder:
+
+``` powershell
+python create_tables.py
+```
+
+Test readings for all non-BDV parameters (including current, voltage, and
+winding tests) are stored in `public.transformer_test_readings`, with one
+row per transformer, parameter, and test date. BDV continues to use the
+existing `public.transformer_bdv` table. Creating the new tables requires
+permission to create tables in the configured PostgreSQL schema; equipment
+existence is validated by the API when readings or schedules are saved.
+Illustrative graph points have parameter-specific values and sample dates;
+they are not persisted as test measurements.
+
+The scheduling and transformer test endpoints can be inspected at
+`http://localhost:8000/docs`.
+
 ------------------------------------------------------------------------
 
-## 11. Planned Next Development Steps
+## 12. Equipment Record Export and Deletion
+
+On the individual equipment list, Admins can download an Excel workbook
+before deleting an equipment record. The workbook contains separate
+sheets for equipment details, asset schedules, BDV tests, other
+transformer tests, and nameplate information; an available nameplate image
+is embedded in the workbook.
+
+The Delete button is enabled only after a successful export for that
+equipment. The export authorization expires after 30 minutes, so download
+the workbook again if it expires. Admin deletion removes the equipment
+and its associated schedules, test records, nameplate record, and uploaded
+nameplate image. This deletion is permanent.
+
+Admins and Engineers can edit the equipment name and description. The
+equipment ID remains fixed to preserve references from test and schedule
+history. Only Admins can export for deletion and delete equipment.
+
+------------------------------------------------------------------------
+
+## 13. Planned Next Development Steps
 
 The following are future implementation tasks, not features that are
 already complete:

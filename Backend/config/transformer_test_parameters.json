@@ -1,0 +1,285 @@
+{
+  "source": "ERDA test report RP-2526-026098, issued 2025-11-17; report-specific recommended action limits (IS 1866:2017 oil tests). Validate applicability with the responsible electrical engineer before using for operational decisions.",
+  "interval_policy": "Initial intervals: BDV every 6 months and other oil tests every 3 months as requested by the application owner; DGA annually and furan every 24 months follow retest comments in this sample report. Confirm and edit before operational use.",
+  "manual_default_interval_months": 3,
+  "parameters": [
+    {
+      "key": "bdv",
+      "name": "Breakdown Voltage",
+      "group": "oil",
+      "unit": "kV",
+      "interval_months": 6,
+      "reference": "Good: >40 kV; Fair: 30-40 kV; Poor: <30 kV (report, IS 1866:2017).",
+      "bands": [{"label": "Poor", "min": 0, "max": 30, "color": "#fee2e2"}, {"label": "Fair", "min": 30, "max": 40, "color": "#fef3c7"}, {"label": "Good", "min": 40, "max": 100, "color": "#dcfce7"}],
+      "rules": [{"rating": "Poor", "operator": "lt", "value": 30}, {"rating": "Fair", "operator": "between", "min": 30, "max": 40}, {"rating": "Good", "operator": "gt", "value": 40}],
+      "demo_values": [65.0, 69.0, 71.0, 68.0]
+    },
+    {
+      "key": "water_content",
+      "name": "Water Content",
+      "group": "oil",
+      "unit": "mg/kg",
+      "interval_months": 3,
+      "reference": "Good: <30 mg/kg; Fair: 30-40 mg/kg; Poor: >40 mg/kg (report, IS 1866:2017).",
+      "bands": [{"label": "Good", "min": 0, "max": 30, "color": "#dcfce7"}, {"label": "Fair", "min": 30, "max": 40, "color": "#fef3c7"}, {"label": "Poor", "min": 40, "max": 80, "color": "#fee2e2"}],
+      "rules": [{"rating": "Good", "operator": "lt", "value": 30}, {"rating": "Fair", "operator": "between", "min": 30, "max": 40}, {"rating": "Poor", "operator": "gt", "value": 40}],
+      "demo_values": [18, 14, 13, 11]
+    },
+    {
+      "key": "acidity",
+      "name": "Acidity (Neutralization Value)",
+      "group": "oil",
+      "unit": "mg KOH/g",
+      "interval_months": 3,
+      "reference": "Good: <0.15; Fair: 0.15-0.30; Poor: >0.30 mg KOH/g (report, IS 1866:2017).",
+      "bands": [{"label": "Good", "min": 0, "max": 0.15, "color": "#dcfce7"}, {"label": "Fair", "min": 0.15, "max": 0.3, "color": "#fef3c7"}, {"label": "Poor", "min": 0.3, "max": 0.6, "color": "#fee2e2"}],
+      "rules": [{"rating": "Good", "operator": "lt", "value": 0.15}, {"rating": "Fair", "operator": "between", "min": 0.15, "max": 0.3}, {"rating": "Poor", "operator": "gt", "value": 0.3}],
+      "demo_values": [0.04, 0.03, 0.02, 0.014]
+    },
+    {
+      "key": "ddf",
+      "name": "Dielectric Dissipation Factor at 90°C",
+      "group": "oil",
+      "unit": "factor",
+      "interval_months": 3,
+      "reference": "Good: <0.10; Fair: 0.10-0.50; Poor: >0.50 (report, IS 1866:2017).",
+      "bands": [{"label": "Good", "min": 0, "max": 0.1, "color": "#dcfce7"}, {"label": "Fair", "min": 0.1, "max": 0.5, "color": "#fef3c7"}, {"label": "Poor", "min": 0.5, "max": 1, "color": "#fee2e2"}],
+      "rules": [{"rating": "Good", "operator": "lt", "value": 0.1}, {"rating": "Fair", "operator": "between", "min": 0.1, "max": 0.5}, {"rating": "Poor", "operator": "gt", "value": 0.5}],
+      "demo_values": [0.012, 0.008, 0.005, 0.0028]
+    },
+    {
+      "key": "resistivity",
+      "name": "Resistivity at 90°C",
+      "group": "oil",
+      "unit": "GΩ·m",
+      "interval_months": 3,
+      "reference": "Good: >3 GΩ·m; Fair: 0.2-3 GΩ·m; Poor: <0.2 GΩ·m (report, IS 1866:2017).",
+      "bands": [{"label": "Poor", "min": 0, "max": 0.2, "color": "#fee2e2"}, {"label": "Fair", "min": 0.2, "max": 3, "color": "#fef3c7"}, {"label": "Good", "min": 3, "max": 500, "color": "#dcfce7"}],
+      "rules": [{"rating": "Poor", "operator": "lt", "value": 0.2}, {"rating": "Fair", "operator": "between", "min": 0.2, "max": 3}, {"rating": "Good", "operator": "gt", "value": 3}],
+      "demo_values": [310, 350, 390, 390]
+    },
+    {
+      "key": "sediment_sludge",
+      "name": "Sediment and Sludge",
+      "group": "oil",
+      "unit": "% by mass",
+      "interval_months": 3,
+      "reference": "Requirement: no sediment or precipitable sludge. The report notes results below 0.02% by mass may be neglected; values outside that note need engineering review.",
+      "bands": [{"label": "Below report tolerance", "min": 0, "max": 0.02, "color": "#dcfce7"}, {"label": "Review", "min": 0.02, "max": 0.1, "color": "#fef3c7"}],
+      "rules": [{"rating": "Within report tolerance", "operator": "lt", "value": 0.02}],
+      "otherwise_rating": "Review required",
+      "demo_values": [0.01, 0.008, 0.01, 0.005]
+    },
+    {
+      "key": "interfacial_tension",
+      "name": "Interfacial Tension at 25°C",
+      "group": "oil",
+      "unit": "mN/m",
+      "interval_months": 3,
+      "reference": "Good: >25 mN/m; Fair: 20-25 mN/m; Poor: <20 mN/m (report, IS 1866:2017).",
+      "bands": [{"label": "Poor", "min": 0, "max": 20, "color": "#fee2e2"}, {"label": "Fair", "min": 20, "max": 25, "color": "#fef3c7"}, {"label": "Good", "min": 25, "max": 50, "color": "#dcfce7"}],
+      "rules": [{"rating": "Poor", "operator": "lt", "value": 20}, {"rating": "Fair", "operator": "between", "min": 20, "max": 25}, {"rating": "Good", "operator": "gt", "value": 25}],
+      "demo_values": [29.4, 30.2, 31.0, 31.6]
+    },
+    {
+      "key": "flash_point",
+      "name": "Flash Point",
+      "group": "oil",
+      "unit": "°C",
+      "interval_months": 3,
+      "reference": "Minimum 144°C (report, IS 1866:2017).",
+      "bands": [{"label": "Below minimum", "min": 80, "max": 144, "color": "#fee2e2"}, {"label": "Meets minimum", "min": 144, "max": 220, "color": "#dcfce7"}],
+      "rules": [{"rating": "Below minimum", "operator": "lt", "value": 144}, {"rating": "Meets minimum", "operator": "gte", "value": 144}],
+      "demo_values": [153, 156, 157, 158.5]
+    },
+    {
+      "key": "hydrogen",
+      "name": "Hydrogen (H₂)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [16, 20, 24, 28]
+    },
+    {
+      "key": "oxygen",
+      "name": "Oxygen (O₂)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [15100, 15300, 15450, 15593]
+    },
+    {
+      "key": "nitrogen",
+      "name": "Nitrogen (N₂)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [48500, 48800, 49000, 49215]
+    },
+    {
+      "key": "methane",
+      "name": "Methane (CH₄)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [1, 2, 2, 3]
+    },
+    {
+      "key": "ethylene",
+      "name": "Ethylene (C₂H₄)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [1, 1, 2, 2]
+    },
+    {
+      "key": "ethane",
+      "name": "Ethane (C₂H₆)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [0, 0, 0, 0]
+    },
+    {
+      "key": "acetylene",
+      "name": "Acetylene (C₂H₂)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [0, 0, 0, 0]
+    },
+    {
+      "key": "propylene_propane",
+      "name": "Propylene + Propane (C₃H₆ + C₃H₈)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [0, 1, 1, 2]
+    },
+    {
+      "key": "carbon_dioxide",
+      "name": "Carbon Dioxide (CO₂)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [1400, 1450, 1490, 1522]
+    },
+    {
+      "key": "carbon_monoxide",
+      "name": "Carbon Monoxide (CO)",
+      "group": "dga",
+      "unit": "µL/L (ppm)",
+      "interval_months": 12,
+      "reference": "No good/fair/poor limit is stated in the attached report. It recommends annual DGA retesting as a routine check.",
+      "demo_values": [190, 200, 210, 222]
+    },
+    {
+      "key": "total_furan",
+      "name": "Total Furan Content",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits.",
+      "demo_values": [0.07, 0.08, 0.1, 0.11]
+    },
+    {
+      "key": "hmf",
+      "name": "5-Hydroxymethyl-2-furfural",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits. Report detection limit: 0.05 mg/kg.",
+      "demo_values": [0.02, 0.03, 0.04, 0.04]
+    },
+    {
+      "key": "furfuryl_alcohol",
+      "name": "2-Furfuryl Alcohol",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits. Report detection limit: 0.05 mg/kg.",
+      "demo_values": [0.02, 0.02, 0.03, 0.04]
+    },
+    {
+      "key": "furfural",
+      "name": "2-Furfural",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits. Report detection limit: 0.05 mg/kg.",
+      "demo_values": [0.07, 0.08, 0.1, 0.11]
+    },
+    {
+      "key": "acetylfuran",
+      "name": "2-Acetylfuran",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits. Report detection limit: 0.05 mg/kg.",
+      "demo_values": [0.02, 0.02, 0.03, 0.04]
+    },
+    {
+      "key": "methyl_furfural",
+      "name": "5-Methyl-2-furfural",
+      "group": "furan",
+      "unit": "mg/kg",
+      "interval_months": 24,
+      "reference": "The report recommends retesting after two years to monitor degradation; it does not state good/fair/poor limits. Report detection limit: 0.05 mg/kg.",
+      "demo_values": [0.02, 0.03, 0.03, 0.04]
+    },
+    {
+      "key": "hv_lv",
+      "name": "Winding Test HV-LV",
+      "group": "winding",
+      "unit": "as specified by test procedure",
+      "interval_months": null,
+      "reference": "The attached oil-test report does not specify a winding-test interval or assessment limit.",
+      "demo_values": [0.96, 0.98, 1.01, 0.99]
+    },
+    {
+      "key": "hv_e",
+      "name": "Winding Test HV-E",
+      "group": "winding",
+      "unit": "as specified by test procedure",
+      "interval_months": null,
+      "reference": "The attached oil-test report does not specify a winding-test interval or assessment limit.",
+      "demo_values": [0.97, 0.99, 1.0, 0.98]
+    },
+    {
+      "key": "lv_e",
+      "name": "Winding Test LV-E",
+      "group": "winding",
+      "unit": "as specified by test procedure",
+      "interval_months": null,
+      "reference": "The attached oil-test report does not specify a winding-test interval or assessment limit.",
+      "demo_values": [0.95, 0.98, 1.0, 0.99]
+    },
+    {
+      "key": "voltage",
+      "name": "Operating Voltage",
+      "group": "load_temp",
+      "unit": "as configured for equipment",
+      "interval_months": null,
+      "reference": "The attached oil-test report does not specify operating-voltage limits or an interval.",
+      "demo_values": [430, 432, 429, 433]
+    },
+    {
+      "key": "current",
+      "name": "Operating Current",
+      "group": "load_temp",
+      "unit": "as configured for equipment",
+      "interval_months": null,
+      "reference": "The attached oil-test report does not specify operating-current limits or an interval.",
+      "demo_values": [810, 825, 818, 830]
+    }
+  ]
+}

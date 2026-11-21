@@ -1,109 +1,162 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAssetSchedules } from "../services/api";
+import "../styles/assetscheduling.css";
 
-import { useState } from "react";
-import "../styles/AssetScheduling.css";
+function getScheduleStatus(schedule) {
+  if (schedule.completed_at) return "Completed";
 
-function AssetScheduling() {
-  const [schedules, setSchedules] = useState([]);
-
-  const [form, setForm] = useState({
-    location: "",
-    equipmentType: "",
-    asset: "",
-    activity: "",
-    scheduledDate: "",
-    description: "",
-  });
-
-  const [filter, setFilter] = useState("All");
-
-  const updateForm = (event) => {
-    const { name, value } = event.target;
-
-    setForm((previous) => ({
-      ...previous,
-      [name]: value,
-      ...(name === "location"
-        ? { equipmentType: "", asset: "" }
-        : {}),
-      ...(name === "equipmentType"
-        ? { asset: "" }
-        : {}),
-    }));
-  };
-
-  const getStatus = (schedule) => {
-    if (schedule.completed) return "Completed";
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const dueDate = new Date(
-      `${schedule.scheduledDate}T00:00:00`
-    );
-
-    const daysRemaining = Math.ceil(
-      (dueDate - today) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysRemaining < 0) return "Overdue";
-    if (daysRemaining <= 7) return "Due Soon";
-
-    return "Scheduled";
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const newSchedule = {
-      ...form,
-      id: Date.now(),
-      completed: false,
-    };
-
-    setSchedules((previous) => [
-      ...previous,
-      newSchedule,
-    ]);
-
-    setForm({
-      location: "",
-      equipmentType: "",
-      asset: "",
-      activity: "",
-      scheduledDate: "",
-      description: "",
-    });
-  };
-
-  const markCompleted = (id) => {
-    setSchedules((previous) =>
-      previous.map((schedule) =>
-        schedule.id === id
-          ? { ...schedule, completed: true }
-          : schedule
-      )
-    );
-  };
-
-  const filteredSchedules = schedules.filter(
-    (schedule) =>
-      filter === "All" ||
-      getStatus(schedule) === filter
+  const [year, month, day] = schedule.scheduled_date.split("-").map(Number);
+  const due = Date.UTC(year, month - 1, day);
+  const now = new Date();
+  const today = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+  const daysUntilDue = Math.floor(
+    (due - today) / (24 * 60 * 60 * 1000)
   );
 
-  const counts = {
-    scheduled: schedules.filter(
-      (s) => getStatus(s) === "Scheduled"
-    ).length,
-    dueSoon: schedules.filter(
-      (s) => getStatus(s) === "Due Soon"
-    ).length,
-    overdue: schedules.filter(
-      (s) => getStatus(s) === "Overdue"
-    ).length,
-    completed: schedules.filter(
-      (s) => getStatus(s) === "Completed"
-    ).length,
+  if (daysUntilDue < 0) return "Overdue";
+  if (daysUntilDue <= 7) return "Due Soon";
+  return "Scheduled";
+}
+
+function formatDate(value) {
+  return new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium",
+  }).format(new Date(`${value}T00:00:00`));
+}
+
+function AssetScheduling() {
+  const navigate = useNavigate();
+  const [schedules, setSchedules] = useState([]);
+  const [search, setSearch] = useState("");
+  const [substationFilter, setSubstationFilter] = useState("");
+  const [equipmentTypeFilter, setEquipmentTypeFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSchedules() {
+      try {
+        const data = await getAssetSchedules();
+        if (active) setSchedules(data);
+      } catch (loadError) {
+        if (active) setError(loadError.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadSchedules();
+    const timer = window.setInterval(loadSchedules, 60_000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  const substations = useMemo(() => {
+    const options = new Map();
+    schedules.forEach((schedule) => {
+      options.set(schedule.substation_id, schedule.substation_name);
+    });
+    return [...options.entries()].sort((a, b) =>
+      a[1].localeCompare(b[1])
+    );
+  }, [schedules]);
+
+  const equipmentTypes = useMemo(
+    () =>
+      [...new Set(schedules.map((schedule) => schedule.equipment_type))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b)),
+    [schedules]
+  );
+
+  const filteredSchedules = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase();
+
+    return schedules.filter((schedule) => {
+      const searchableValues = [
+        schedule.substation_name,
+        schedule.substation_id,
+        schedule.equipment_type,
+        schedule.equipment_name,
+        schedule.equipment_id,
+        schedule.activity,
+        schedule.parameter_key,
+        schedule.last_test_date,
+        schedule.last_test_date
+          ? formatDate(schedule.last_test_date)
+          : "No test date",
+        schedule.interval_months
+          ? `${schedule.interval_months} months`
+          : "Not configured",
+        schedule.scheduled_date,
+        formatDate(schedule.scheduled_date),
+        getScheduleStatus(schedule),
+        schedule.parameter_key ? "Enter Test" : "View Equipment",
+      ];
+      const matchesSearch =
+        !query ||
+        searchableValues.some((value) =>
+          String(value ?? "").toLocaleLowerCase().includes(query)
+        );
+      const matchesSubstation =
+        !substationFilter ||
+        schedule.substation_id === substationFilter;
+      const matchesEquipmentType =
+        !equipmentTypeFilter ||
+        schedule.equipment_type === equipmentTypeFilter;
+
+      return matchesSearch && matchesSubstation && matchesEquipmentType;
+    });
+  }, [schedules, search, substationFilter, equipmentTypeFilter]);
+
+  const counts = useMemo(
+    () =>
+      schedules.reduce(
+        (result, schedule) => {
+          const status = getScheduleStatus(schedule);
+          if (status === "Scheduled") result.scheduled += 1;
+          if (status === "Due Soon") result.dueSoon += 1;
+          if (status === "Overdue") result.overdue += 1;
+          if (status === "Completed") result.completed += 1;
+          return result;
+        },
+        { scheduled: 0, dueSoon: 0, overdue: 0, completed: 0 }
+      ),
+    [schedules]
+  );
+
+  const attentionItems = schedules
+    .filter((schedule) =>
+      ["Due Soon", "Overdue"].includes(getScheduleStatus(schedule))
+    )
+    .sort((a, b) =>
+      a.scheduled_date.localeCompare(b.scheduled_date)
+    );
+
+  const openTest = (schedule) => {
+    const location = encodeURIComponent(schedule.substation_id);
+    const equipment = encodeURIComponent(schedule.equipment_id);
+    const section = schedule.parameter_key
+      ? `?section=${encodeURIComponent(schedule.parameter_key)}`
+      : "";
+    const isTransformer = schedule.equipment_type
+      ?.toLowerCase()
+      .includes("transformer");
+    const path = isTransformer
+      ? `/substations/${location}/transformer/${equipment}${section}`
+      : `/substations/${location}/equipment/${equipment}`;
+
+    navigate(path);
   };
 
   return (
@@ -112,160 +165,110 @@ function AssetScheduling() {
         <div>
           <h1>Asset Scheduling</h1>
           <p>
-            Schedule equipment inspections, testing,
-            and maintenance activities.
+            Upcoming transformer tests are calculated from each
+            parameter&apos;s latest saved test date and configured interval.
           </p>
         </div>
       </div>
 
-      {/* SUMMARY CARDS */}
       <div className="scheduling-summary">
         <div className="schedule-stat-card">
           <span>Scheduled</span>
           <h2>{counts.scheduled}</h2>
         </div>
-
         <div className="schedule-stat-card due-soon">
-          <span>Due Soon</span>
+          <span>Due Within 7 Days</span>
           <h2>{counts.dueSoon}</h2>
         </div>
-
         <div className="schedule-stat-card overdue">
           <span>Overdue</span>
           <h2>{counts.overdue}</h2>
         </div>
-
         <div className="schedule-stat-card completed">
-          <span>Completed</span>
+          <span>Completed Manual Items</span>
           <h2>{counts.completed}</h2>
         </div>
       </div>
 
-      {/* CREATE SCHEDULE */}
-      <div className="scheduling-form-section">
-        <h2>Create Asset Schedule</h2>
+      <section className="scheduling-form-section">
+        <h2>How test schedules are calculated</h2>
+        <p className="scheduling-help">
+          Save a test result from the transformer&apos;s Test Parameters.
+          This page uses that parameter&apos;s latest test date plus its
+          interval in the single editable test-parameter configuration.
+          Weekend and Tamil Nadu public-holiday due dates move to the next
+          working day. Parameters without a configured interval do not
+          create automatic reminders.
+        </p>
+        <p className="scheduling-help">
+          Upcoming dashboard reminders appear only during the seven days
+          before a test is due. Overdue items remain visible here.
+        </p>
+      </section>
 
-        <form onSubmit={handleSubmit}>
-          <div className="scheduling-form-grid">
-            <label>
-              Substation Location
-              <input
-                name="location"
-                value={form.location}
-                onChange={updateForm}
-                placeholder="e.g. PDC-1"
-                required
-              />
-            </label>
-
-            <label>
-              Equipment Type
-              <input
-                name="equipmentType"
-                value={form.equipmentType}
-                onChange={updateForm}
-                placeholder="e.g. Power Transformer"
-                required
-              />
-            </label>
-
-            <label>
-              Asset / Equipment
-              <input
-                name="asset"
-                value={form.asset}
-                onChange={updateForm}
-                placeholder="e.g. TR-1"
-                required
-              />
-            </label>
-
-            <label>
-              Activity Type
-              <select
-                name="activity"
-                value={form.activity}
-                onChange={updateForm}
-                required
-              >
-                <option value="">Select Activity</option>
-                <option value="Inspection">
-                  Inspection
-                </option>
-                <option value="Oil Testing">
-                  Oil Testing
-                </option>
-                <option value="Preventive Maintenance">
-                  Preventive Maintenance
-                </option>
-                <option value="Condition Assessment">
-                  Condition Assessment
-                </option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-
-            <label>
-              Scheduled Date
-              <input
-                type="date"
-                name="scheduledDate"
-                value={form.scheduledDate}
-                onChange={updateForm}
-                required
-              />
-            </label>
-
-            <label>
-              Description
-              <input
-                name="description"
-                value={form.description}
-                onChange={updateForm}
-                placeholder="Enter activity details"
-              />
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            className="schedule-submit-btn"
-          >
-            Add Schedule
-          </button>
-        </form>
-      </div>
-
-      {/* ALERTS */}
-      {(counts.dueSoon > 0 || counts.overdue > 0) && (
+      {attentionItems.length > 0 && (
         <div className="scheduling-alert">
-          <strong>Scheduling Alerts</strong>
-          <p>
-            {counts.overdue} overdue and{" "}
-            {counts.dueSoon} upcoming activities
-            require attention.
-          </p>
+          <strong>Tests requiring attention</strong>
+          <ul>
+            {attentionItems.map((schedule) => (
+              <li key={schedule.id}>
+                {getScheduleStatus(schedule)}: {schedule.substation_name} —{" "}
+                {schedule.equipment_name} ({schedule.equipment_id}),{" "}
+                {schedule.activity}, due {formatDate(schedule.scheduled_date)}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      {/* TO-DO LIST */}
-      <div className="scheduling-list-section">
+      <section className="scheduling-list-section">
         <div className="scheduling-list-header">
-          <h2>Scheduled Activities / To-Do List</h2>
+          <div>
+            <h2>Equipment Test Schedule</h2>
+            <p className="scheduling-help">
+              Search and filter scheduled tests by location, equipment,
+              parameter, date, interval, status, or action.
+            </p>
+          </div>
+        </div>
 
+        <div className="scheduling-filters">
+          <input
+            type="search"
+            aria-label="Search all schedule columns"
+            placeholder="Search equipment, parameter, date, status..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
           <select
-            value={filter}
+            aria-label="Filter by substation"
+            value={substationFilter}
+            onChange={(event) => setSubstationFilter(event.target.value)}
+          >
+            <option value="">All Substations</option>
+            {substations.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by equipment type"
+            value={equipmentTypeFilter}
             onChange={(event) =>
-              setFilter(event.target.value)
+              setEquipmentTypeFilter(event.target.value)
             }
           >
-            <option value="All">All Activities</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Due Soon">Due Soon</option>
-            <option value="Overdue">Overdue</option>
-            <option value="Completed">Completed</option>
+            <option value="">All Equipment Types</option>
+            {equipmentTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
           </select>
         </div>
+
+        {error && <p className="scheduling-error" role="alert">{error}</p>}
 
         <div className="scheduling-table-wrapper">
           <table className="scheduling-table">
@@ -273,66 +276,78 @@ function AssetScheduling() {
               <tr>
                 <th>Substation</th>
                 <th>Equipment Type</th>
-                <th>Asset</th>
-                <th>Activity</th>
-                <th>Scheduled Date</th>
+                <th>Transformer / Equipment</th>
+                <th>Test Parameter</th>
+                <th>Latest Test Date</th>
+                <th>Interval</th>
+                <th>Next Due Date</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredSchedules.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="9" className="scheduling-empty">
+                    Loading test schedules...
+                  </td>
+                </tr>
+              ) : filteredSchedules.length ? (
                 filteredSchedules.map((schedule) => {
-                  const status = getStatus(schedule);
-
+                  const status = getScheduleStatus(schedule);
                   return (
                     <tr key={schedule.id}>
-                      <td>{schedule.location}</td>
-                      <td>{schedule.equipmentType}</td>
-                      <td>{schedule.asset}</td>
+                      <td>{schedule.substation_name}</td>
+                      <td>{schedule.equipment_type}</td>
+                      <td>
+                        {schedule.equipment_name} ({schedule.equipment_id})
+                      </td>
                       <td>{schedule.activity}</td>
-                      <td>{schedule.scheduledDate}</td>
+                      <td>
+                        {schedule.last_test_date
+                          ? formatDate(schedule.last_test_date)
+                          : "-"}
+                      </td>
+                      <td>
+                        {schedule.interval_months
+                          ? `${schedule.interval_months} months`
+                          : "-"}
+                      </td>
+                      <td>{formatDate(schedule.scheduled_date)}</td>
                       <td>
                         <span
                           className={`schedule-status ${
-                            status
-                              .toLowerCase()
-                              .replace(/\s+/g, "-")
+                            status.toLowerCase().replace(/\s+/g, "-")
                           }`}
                         >
                           {status}
                         </span>
                       </td>
                       <td>
-                        {status !== "Completed" && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              markCompleted(schedule.id)
-                            }
-                          >
-                            Mark Completed
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          className="schedule-view-equipment-btn"
+                          onClick={() => openTest(schedule)}
+                        >
+                          {schedule.parameter_key ? "Enter Test" : "View Equipment"}
+                        </button>
                       </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="scheduling-empty"
-                  >
-                    No scheduled activities found.
+                  <td colSpan="9" className="scheduling-empty">
+                    {error
+                      ? "Schedules could not be loaded."
+                      : "No test schedules match this filter. Save a transformer test result to create its next due date."}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

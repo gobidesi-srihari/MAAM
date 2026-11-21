@@ -65,7 +65,8 @@ export async function apiRequest(endpoint, options = {}) {
     throw new Error(
       typeof data.detail === "string"
         ? data.detail
-        : data.message || `API request failed (${response.status})`
+        : data.message ||
+          `API request failed (${response.status}) for ${endpoint}`
     );
   }
 
@@ -88,6 +89,29 @@ export async function createSubstation(data) {
     method: "POST",
     body: JSON.stringify(data),
   });
+}
+
+export async function updateSubstation(substationId, data) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export async function deleteSubstation(substationId) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
+export async function getCurrentUser() {
+  return apiRequest("/auth/me");
 }
 
 
@@ -141,6 +165,82 @@ export async function createEquipment(
     {
       method: "POST",
       body: JSON.stringify(data),
+    }
+  );
+}
+
+export async function updateEquipmentRecord(
+  substationId,
+  equipmentTypeId,
+  equipmentId,
+  data
+) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}` +
+    `/equipment-types/${encodeURIComponent(equipmentTypeId)}` +
+    `/equipment/${encodeURIComponent(equipmentId)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export async function downloadEquipmentExport(
+  substationId,
+  equipmentTypeId,
+  equipmentId
+) {
+  const token = localStorage.getItem("access_token");
+  const endpoint =
+    `/substations/${encodeURIComponent(substationId)}` +
+    `/equipment-types/${encodeURIComponent(equipmentTypeId)}` +
+    `/equipment/${encodeURIComponent(equipmentId)}/export`;
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : data.message || `Equipment export failed (${response.status})`
+    );
+  }
+
+  const exportToken = response.headers.get("X-Equipment-Export-Token");
+  if (!exportToken) {
+    throw new Error("The server did not provide a delete authorization token.");
+  }
+
+  const contentDisposition =
+    response.headers.get("Content-Disposition") || "";
+  const filename = contentDisposition.match(/filename="?([^";]+)"?/i)?.[1]
+    || `equipment_${equipmentId}.xlsx`;
+
+  return {
+    blob: await response.blob(),
+    exportToken,
+    filename,
+  };
+}
+
+export async function deleteEquipmentRecord(
+  substationId,
+  equipmentTypeId,
+  equipmentId,
+  exportToken
+) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}` +
+    `/equipment-types/${encodeURIComponent(equipmentTypeId)}` +
+    `/equipment/${encodeURIComponent(equipmentId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        "X-Equipment-Export-Token": exportToken,
+      },
     }
   );
 }
@@ -255,6 +355,67 @@ export async function getTransformerNameplateImage(
   }
 
   return URL.createObjectURL(imageBlob);
+}
+
+
+/* =========================================
+   ASSET SCHEDULING APIs
+========================================= */
+
+export async function getAssetSchedules(dueWithinDays = null) {
+  const query = dueWithinDays === null
+    ? ""
+    : `?due_within_days=${encodeURIComponent(dueWithinDays)}`;
+  return apiRequest(`/asset-schedules${query}`);
+}
+
+export async function createAssetSchedule(data) {
+  return apiRequest("/asset-schedules", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function completeAssetSchedule(scheduleId) {
+  return apiRequest(
+    `/asset-schedules/${encodeURIComponent(scheduleId)}/complete`,
+    {
+      method: "POST",
+    }
+  );
+}
+
+export async function getTransformerTestCatalog() {
+  return apiRequest("/transformer-test-parameters");
+}
+
+export async function getTransformerTestReadings(
+  substationId,
+  equipmentId,
+  parameterKey
+) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}` +
+    `/transformers/${encodeURIComponent(equipmentId)}` +
+    `/tests/${encodeURIComponent(parameterKey)}`
+  );
+}
+
+export async function createTransformerTestReading(
+  substationId,
+  equipmentId,
+  parameterKey,
+  data
+) {
+  return apiRequest(
+    `/substations/${encodeURIComponent(substationId)}` +
+    `/transformers/${encodeURIComponent(equipmentId)}` +
+    `/tests/${encodeURIComponent(parameterKey)}`,
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    }
+  );
 }
 
 

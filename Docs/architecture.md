@@ -291,7 +291,7 @@ responses, usually in JSON format.
 Example current login endpoint:
 
 ``` text
-POST /login
+POST /auth/login
 ```
 
 The login endpoint checks the submitted credentials and returns a

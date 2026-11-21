@@ -207,6 +207,171 @@
   background: #1d4ed8;
 }
 
+.equipment-page .equipment-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.equipment-page .edit-equipment-btn,
+.equipment-page .download-equipment-btn,
+.equipment-page .delete-equipment-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.equipment-page .edit-equipment-btn {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.equipment-page .edit-equipment-btn:hover {
+  background: #cbd5e1;
+}
+
+.equipment-page .download-equipment-btn {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.equipment-page .download-equipment-btn:hover {
+  background: #115e59;
+}
+
+.equipment-page .delete-equipment-btn {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.equipment-page .delete-equipment-btn:hover {
+  background: #b91c1c;
+}
+
+.equipment-page .delete-equipment-btn:disabled,
+.equipment-page .download-equipment-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.equipment-page .delete-equipment-btn:disabled:hover {
+  background: #dc2626;
+}
+
+.equipment-page .equipment-card-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.equipment-page .equipment-export-required {
+  flex-basis: 100%;
+  color: #64748b;
+  font-size: 12px;
+  text-align: right;
+}
+
+.equipment-page .equipment-form-success {
+  color: #15803d;
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+.equipment-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.equipment-edit-modal {
+  width: min(480px, 100%);
+  padding: 26px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+
+.equipment-edit-modal h2 {
+  margin: 0 0 20px;
+  color: #1e293b;
+  font-size: 21px;
+}
+
+.equipment-edit-modal form,
+.equipment-edit-modal label {
+  display: flex;
+  flex-direction: column;
+}
+
+.equipment-edit-modal form {
+  gap: 18px;
+}
+
+.equipment-edit-modal label {
+  gap: 7px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.equipment-edit-modal input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.equipment-edit-modal input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.equipment-edit-modal input[readonly] {
+  background: #f1f5f9;
+}
+
+.equipment-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.equipment-edit-actions button {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.equipment-edit-actions .equipment-cancel-btn {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.equipment-edit-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* =========================================
    CREATE NEW EQUIPMENT SECTION
 ========================================= */
@@ -335,7 +500,19 @@
     min-width: 44px;
   }
 
-  .equipment-page .view-equipment-btn {
+  .equipment-page .equipment-card-actions {
+    width: 100%;
+  }
+
+  .equipment-page .equipment-card-actions button {
+    flex: 1;
+  }
+
+  .equipment-page .equipment-export-required {
+    text-align: left;
+  }
+
+  .equipment-page .equipment-card-actions .view-equipment-btn {
     width: 100%;
   }
 
